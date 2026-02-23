@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KITS — Premium Jerseys</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+:root{--bg:#0e0e0e;--card:#161616;--card-hover:#1c1c1c;--border:#272727;--white:#f0ede8;--dim:#555;--green:#b5ff4d;}
+body{background:var(--bg);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:#333;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:0 40px;height:60px;background:rgba(14,14,14,0.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:var(--white);text-decoration:none;}
+.logo span{color:var(--green);}
+.nav-center{display:flex;gap:36px;}
+.nav-center a{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;font-weight:400;}
+.nav-center a:hover{color:var(--white);}
+.nav-bag{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;background:var(--green);color:#0e0e0e;border:none;padding:9px 22px;cursor:pointer;font-weight:700;transition:opacity .2s;}
+.nav-bag:hover{opacity:.8;}
+
+/* HERO */
+.hero{margin-top:60px;padding:50px 40px 36px;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--border);}
+.hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--green);margin-bottom:14px;}
+.hero-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(52px,7vw,96px);font-weight:700;line-height:.9;letter-spacing:-1px;text-transform:uppercase;}
+.hero-title span{display:block;font-weight:300;color:var(--dim);}
+.hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px;}
+.hero-meta{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);text-align:right;line-height:2.2;}
+.hero-count{font-family:'Barlow Condensed',sans-serif;font-size:80px;font-weight:700;color:#222;line-height:1;letter-spacing:-3px;}
+
+/* FILTER */
+.filter-bar{display:flex;align-items:center;padding:0 40px;border-bottom:1px solid var(--border);overflow-x:auto;gap:0;}
+.filter-bar::-webkit-scrollbar{display:none;}
+.filter-btn{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);background:none;border:none;border-bottom:2px solid transparent;padding:15px 22px 13px;cursor:pointer;transition:all .2s;white-space:nowrap;font-weight:500;}
+.filter-btn:hover{color:var(--white);}
+.filter-btn.active{color:var(--white);border-bottom-color:var(--green);}
+
+/* MASONRY */
+.masonry-wrap{padding:28px 36px 80px;column-count:4;column-gap:10px;}
+
+/* CARD */
+.kit-card{
+  break-inside:avoid;
+  margin-bottom:10px;
+  background:var(--card);
+  border:1px solid var(--border);
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(18px);
+  transition:opacity .5s,transform .5s,border-color .3s,background .3s;
+  border-radius:2px;
+}
+.kit-card.in{opacity:1;transform:translateY(0);}
+.kit-card:hover{background:var(--card-hover);border-color:#383838;}
+
+/* IMAGE BOX — fixed height, padded, centered */
+.kit-img{
+  width:100%;
+  background:#111;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px 16px 12px;
+  position:relative;
+  overflow:hidden;
+}
+/* Vary card image area heights for masonry feel */
+.kit-card:nth-child(4n+1) .kit-img{height:240px;}
+.kit-card:nth-child(4n+2) .kit-img{height:200px;}
+.kit-card:nth-child(4n+3) .kit-img{height:220px;}
+.kit-card:nth-child(4n+0) .kit-img{height:210px;}
+
+.kit-img img{
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  display:block;
+  transition:transform .6s cubic-bezier(.25,.46,.45,.94);
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,0.6));
+}
+.kit-card:hover .kit-img img{transform:scale(1.07) translateY(-4px);}
+
+/* subtle glow bg on hover */
+.kit-img::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at center,rgba(181,255,77,0.05) 0%,transparent 70%);
+  opacity:0;
+  transition:opacity .4s;
+}
+.kit-card:hover .kit-img::before{opacity:1;}
+
+/* BADGE */
+.kit-badge{
+  position:absolute;
+  top:10px;left:10px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8px;letter-spacing:3px;text-transform:uppercase;
+  padding:4px 9px;font-weight:700;z-index:3;
+}
+.badge-new{background:var(--green);color:#0e0e0e;}
+.badge-ltd{background:transparent;border:1px solid rgba(240,237,232,.25);color:var(--white);}
+.badge-sale{background:#ff4d4d;color:#fff;}
+.badge-hot{background:#ff8c00;color:#fff;}
+
+/* CARD BODY */
+.kit-body{padding:12px 14px 14px;border-top:1px solid var(--border);}
+.kit-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.kit-num{font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);}
+.kit-price{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--green);letter-spacing:-.5px;}
+.kit-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:1px;text-transform:uppercase;line-height:1;margin-bottom:3px;}
+.kit-sub{font-size:10px;color:var(--dim);letter-spacing:.5px;}
+.kit-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.kit-sizes{display:flex;gap:4px;}
+.ksz{
+  font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:1px;
+  width:24px;height:24px;border:1px solid var(--border);background:none;color:var(--dim);
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-weight:600;
+}
+.ksz:hover{border-color:#555;color:var(--white);}
+.ksz.active{background:var(--white);color:var(--bg);border-color:var(--white);}
+.kit-add{
+  font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  background:none;border:1px solid var(--border);color:var(--dim);padding:6px 12px;
+  cursor:pointer;transition:all .2s;font-weight:600;
+}
+.kit-add:hover{background:var(--green);border-color:var(--green);color:var(--bg);}
+
+/* STATS */
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);}
+.stat{padding:32px 36px;border-right:1px solid var(--border);}
+.stat:last-child{border-right:none;}
+.stat-n{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:700;color:var(--white);letter-spacing:-1px;line-height:1;}
+.stat-n span{color:var(--green);}
+.stat-l{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-top:5px;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;justify-content:space-between;align-items:center;}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:6px;text-transform:uppercase;}
+.footer-logo span{color:var(--green);}
+.footer-links{display:flex;gap:24px;}
+.footer-links a{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--white);}
+.footer-copy{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#2a2a2a;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(10,10,10,0.97);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(12px);padding:20px;}
+.modal-bg.active{opacity:1;pointer-events:all;}
+.modal{background:var(--card);border:1px solid var(--border);display:grid;grid-template-columns:300px 1fr;max-width:680px;width:100%;max-height:88vh;overflow:hidden;transform:translateY(16px) scale(.97);transition:transform .35s;position:relative;border-radius:2px;}
+.modal-bg.active .modal{transform:translateY(0) scale(1);}
+.modal-img-wrap{
+  background:#111;
+  display:flex;align-items:center;justify-content:center;
+  padding:32px 24px;
+  overflow:hidden;
+}
+.modal-img-wrap img{max-width:100%;max-height:320px;width:auto;height:auto;object-fit:contain;display:block;filter:drop-shadow(0 12px 32px rgba(0,0,0,0.8));transition:transform .5s;}
+.modal-bg.active .modal-img-wrap img{transform:scale(1.03);}
+.modal-content{padding:32px 28px;display:flex;flex-direction:column;overflow-y:auto;}
+.modal-close{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.5);border:1px solid var(--border);color:var(--dim);width:32px;height:32px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s;border-radius:1px;}
+.modal-close:hover{background:#ff4d4d;border-color:#ff4d4d;color:#fff;}
+.m-num{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.m-name{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;text-transform:uppercase;letter-spacing:1px;line-height:1;margin-bottom:5px;}
+.m-team{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.m-desc{font-size:12px;line-height:2;color:#666;flex:1;margin-bottom:16px;}
+.m-price{font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:700;color:var(--green);letter-spacing:-1px;margin-bottom:14px;}
+.m-size-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.m-sizes{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.msz{font-family:'Barlow Condensed',sans-serif;min-width:36px;height:36px;padding:0 8px;border:1px solid var(--border);background:none;color:var(--dim);font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .15s;font-weight:600;}
+.msz:hover,.msz.active{background:var(--white);color:var(--bg);border-color:var(--white);}
+.m-add{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;padding:14px;background:var(--green);color:var(--bg);border:none;cursor:pointer;font-weight:700;transition:opacity .2s;width:100%;}
+.m-add:hover{opacity:.8;}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:var(--bg);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;padding:12px 32px;z-index:9999;font-weight:700;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;border-radius:1px;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:1100px){.masonry-wrap{column-count:3;}}
+@media(max-width:800px){nav{padding:0 20px;}.nav-center{display:none;}.masonry-wrap{padding:16px;column-count:2;column-gap:8px;}.hero{padding:36px 20px 28px;flex-direction:column;gap:16px;align-items:flex-start;}.filter-bar{padding:0 20px;}.stats-strip{grid-template-columns:1fr 1fr;}footer{flex-direction:column;gap:18px;padding:24px 20px;}.modal{grid-template-columns:1fr;}.modal-img-wrap{max-height:200px;padding:20px;}}
+@media(max-width:480px){.masonry-wrap{column-count:1;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">KITS<span>.</span></a>
+  <div class="nav-center">
+    <a href="#shop">Shop</a>
+    <a href="#">Clubs</a>
+    <a href="#">National</a>
+    <a href="#">Custom</a>
+  </div>
+  <button class="nav-bag" id="bagBtn">Bag (0)</button>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-tag">Season 2024 / 25 — New Arrivals</p>
+    <h1 class="hero-title">Premium<br><span>Jerseys.</span></h1>
+  </div>
+  <div class="hero-right">
+    <div class="hero-count">20</div>
+    <div class="hero-meta">Official Licensed Kits<br>Free Shipping · Custom Printing</div>
+  </div>
+</section>
+
+<div class="filter-bar">
+  <button class="filter-btn active">All Kits</button>
+  <button class="filter-btn">Home</button>
+  <button class="filter-btn">Away</button>
+  <button class="filter-btn">Third</button>
+  <button class="filter-btn">Limited</button>
+  <button class="filter-btn">Sale</button>
+</div>
+
+<div class="masonry-wrap" id="shop"></div>
+
+<div class="stats-strip">
+  <div class="stat"><div class="stat-n">180<span>+</span></div><div class="stat-l">Countries Shipped</div></div>
+  <div class="stat"><div class="stat-n">50<span>k</span></div><div class="stat-l">Happy Customers</div></div>
+  <div class="stat"><div class="stat-n">100<span>%</span></div><div class="stat-l">Authenticated</div></div>
+  <div class="stat"><div class="stat-n">30<span>d</span></div><div class="stat-l">Free Returns</div></div>
+</div>
+
+<footer>
+  <div class="footer-logo">KITS<span>.</span></div>
+  <div class="footer-links">
+    <a href="#">Privacy</a><a href="#">Terms</a><a href="#">FAQ</a><a href="#">Contact</a><a href="#">Instagram</a>
+  </div>
+  <p class="footer-copy">2025 Kits. All rights reserved.</p>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <div class="modal-img-wrap"><img id="mImg" src="" alt=""></div>
+    <div class="modal-content">
+      <p class="m-num" id="mNum"></p>
+      <h2 class="m-name" id="mName"></h2>
+      <p class="m-team" id="mTeam"></p>
+      <p class="m-desc" id="mDesc"></p>
+      <div class="m-price" id="mPrice"></div>
+      <div class="m-size-label">Select Size</div>
+      <div class="m-sizes">
+        <button class="msz" onclick="pickMsz(this)">XS</button>
+        <button class="msz active" onclick="pickMsz(this)">S</button>
+        <button class="msz" onclick="pickMsz(this)">M</button>
+        <button class="msz" onclick="pickMsz(this)">L</button>
+        <button class="msz" onclick="pickMsz(this)">XL</button>
+        <button class="msz" onclick="pickMsz(this)">XXL</button>
+      </div>
+      <button class="m-add" id="mAddBtn">Add to Bag</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var products = [
+  {num:'No. 01',name:'Home Kit',       team:'Home Edition · 2024/25',       price:'$89', img:'1.png',  badge:'new',  desc:'The definitive home shirt. Premium moisture-wicking fabric with sublimation-printed badge. Officially licensed for the 2024/25 season.'},
+  {num:'No. 02',name:'Away Kit',       team:'Away Edition · 2024/25',       price:'$85', img:'2.png',  badge:'',     desc:'Bold on the road. Lightweight mesh construction for maximum airflow across 90 minutes of intense match play.'},
+  {num:'No. 03',name:'Third Kit',      team:'Third Edition · 2024',         price:'$72', img:'3.png',  badge:'sale', desc:'Heritage design meets modern performance fabric. A collector essential — limited run for this season only.'},
+  {num:'No. 04',name:'Special Ed.',    team:'Limited Release · 2024',       price:'$110',img:'4.png',  badge:'ltd',  desc:'Numbered limited-run collaboration kit. Once this batch is gone, it is gone for good.'},
+  {num:'No. 05',name:'Goalkeeper',     team:'GK Edition · 2024/25',         price:'$95', img:'5.png',  badge:'new',  desc:'Built for the last line of defense. Reinforced grip lining, padded zones and a commanding colourway.'},
+  {num:'No. 06',name:'Strike Kit',     team:'Forward Edition · 2024/25',    price:'$88', img:'6.png',  badge:'new',  desc:'Designed for speed. Ultra-light fabric engineered for the modern forward, built to move fast.'},
+  {num:'No. 07',name:'Classic Retro',  team:'Heritage Edition · 2024',      price:'$79', img:'7.png',  badge:'',     desc:'Inspired by iconic kits of the past, reimagined with modern performance technology.'},
+  {num:'No. 08',name:'Dark Edition',   team:'Special Series · 2024',        price:'$99', img:'8.png',  badge:'ltd',  desc:'All-black statement kit with subtle tonal print. Limited to 500 numbered pieces worldwide.'},
+  {num:'No. 09',name:'Euro Kit',       team:'Continental · 2024/25',        price:'$92', img:'9.png',  badge:'',     desc:'Worn across Europe\'s biggest stages. Premium quality with official continental licensing.'},
+  {num:'No. 10',name:'Icon Series',    team:'Legendary Edition · 2024',     price:'$120',img:'10.png', badge:'ltd',  desc:'A tribute to the legends. This commemorative kit celebrates decades of iconic footballing moments.'},
+  {num:'No. 11',name:'Youth Kit',      team:'Junior Edition · 2024/25',     price:'$65', img:'11.png', badge:'',     desc:'Same official quality as the senior kit, tailored for the next generation of players and fans.'},
+  {num:'No. 12',name:'Training Top',   team:'Training Series · 2024',       price:'$55', img:'12.png', badge:'sale', desc:'Lightweight and breathable, designed for intense training sessions. Same badge, everyday comfort.'},
+  {num:'No. 13',name:'Cup Final Kit',  team:'Wembley Edition · 2024',       price:'$105',img:'13.png', badge:'hot',  desc:'Worn on the biggest day of the season. Limited production run — a piece of history.'},
+  {num:'No. 14',name:'All-Star Kit',   team:'Exhibition Series · 2024',     price:'$95', img:'14.png', badge:'new',  desc:'The premium all-star exhibition jersey. Worn in the season showcase event, now available to fans.'},
+  {num:'No. 15',name:'Winter Kit',     team:'Cold Weather · 2024/25',       price:'$98', img:'15.png', badge:'',     desc:'Engineered for cold-weather performance. Thermal layer technology keeps players warm without bulk.'},
+  {num:'No. 16',name:'Away Dark',      team:'Dark Away · 2024/25',          price:'$86', img:'16.png', badge:'new',  desc:'The darker take on the away kit. High-contrast design that stands out on any pitch.'},
+  {num:'No. 17',name:'Capsule Drop',   team:'Collab Edition · 2024',        price:'$115',img:'17.png', badge:'ltd',  desc:'A limited capsule collaboration with a renowned street-wear designer. Only 300 produced.'},
+  {num:'No. 18',name:'Fan Edition',    team:'Supporters · 2024/25',         price:'$75', img:'18.png', badge:'',     desc:'Made for the stands, built for the street. The fan edition is comfort-first without compromising the look.'},
+  {num:'No. 19',name:'Playoff Kit',    team:'Post-Season · 2024',           price:'$102',img:'19.png', badge:'hot',  desc:'The playoff edition — worn when it matters most. Premium print and heavyweight badge stitching.'},
+  {num:'No. 20',name:'Champions Kit',  team:'Title Winners · 2024',         price:'$130',img:'20.png', badge:'ltd',  desc:'The championship commemorative jersey. Gold-embroidered badge, serial numbered, premium packaging.'}
+];
+
+var cart = 0;
+var sizes = ['S','M','L','XL'];
+
+function buildCards() {
+  var wrap = document.getElementById('shop');
+  var html = '';
+  for (var i = 0; i < products.length; i++) {
+    var p = products[i];
+    var badgeHtml = '';
+    if (p.badge === 'new')  badgeHtml = '<span class="kit-badge badge-new">New</span>';
+    if (p.badge === 'sale') badgeHtml = '<span class="kit-badge badge-sale">Sale</span>';
+    if (p.badge === 'ltd')  badgeHtml = '<span class="kit-badge badge-ltd">Limited</span>';
+    if (p.badge === 'hot')  badgeHtml = '<span class="kit-badge badge-hot">Hot</span>';
+
+    var defaultSizes = ['S','M','L','XL'];
+    var szHtml = '';
+    for (var s = 0; s < defaultSizes.length; s++) {
+      var activeClass = s === 1 ? ' active' : '';
+      szHtml += '<button class="ksz'+activeClass+'" onclick="event.stopPropagation();pickSz(this)">'+defaultSizes[s]+'</button>';
+    }
+
+    html += '<div class="kit-card" onclick="openModal('+i+')">'+
+      badgeHtml+
+      '<div class="kit-img"><img src="'+p.img+'" alt="'+p.name+'" loading="lazy"></div>'+
+      '<div class="kit-body">'+
+        '<div class="kit-top"><span class="kit-num">'+p.num+'</span><span class="kit-price">'+p.price+'</span></div>'+
+        '<div class="kit-name">'+p.name+'</div>'+
+        '<div class="kit-sub">'+p.team+'</div>'+
+        '<div class="kit-footer">'+
+          '<div class="kit-sizes">'+szHtml+'</div>'+
+          '<button class="kit-add" onclick="event.stopPropagation();addToCart(\''+p.name+'\')">Add</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+  wrap.innerHTML = html;
+
+  // observe after building
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, {threshold: 0.04});
+  var cards = wrap.querySelectorAll('.kit-card');
+  cards.forEach(function(el, i) {
+    el.style.transitionDelay = (i % 8 * 0.06) + 's';
+    obs.observe(el);
+  });
+}
+
+function openModal(i) {
+  var p = products[i];
+  document.getElementById('mImg').src = p.img;
+  document.getElementById('mNum').textContent = p.num;
+  document.getElementById('mName').textContent = p.name;
+  document.getElementById('mTeam').textContent = p.team;
+  document.getElementById('mDesc').textContent = p.desc;
+  document.getElementById('mPrice').textContent = p.price;
+  document.getElementById('mAddBtn').onclick = function() { addToCart(p.name); };
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+function pickSz(btn) {
+  var p = btn.closest('.kit-sizes');
+  p.querySelectorAll('.ksz').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+function pickMsz(btn) {
+  document.querySelectorAll('.msz').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+function addToCart(name) {
+  cart++;
+  document.getElementById('bagBtn').textContent = 'Bag (' + cart + ')';
+  var t = document.getElementById('toast');
+  t.textContent = name + ' added';
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+  closeModal();
+}
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  });
+});
+
+buildCards();
+</script>
+</body>
+</html>
